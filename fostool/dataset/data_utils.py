@@ -288,6 +288,8 @@ class DataHandler:
     @classmethod
     def _standard_normalize(cls, data, mean, std):
         for col in data.columns:
+            if data[col].nunique()<=2:
+                continue
             if col in mean:
                 data[col] = (data[col] - mean[col]) / (std[col] + 1e-3)
 
@@ -536,7 +538,7 @@ def _build_input_tensor(
 
         target = torch.from_numpy(target).squeeze(dim=-1)
 
-        feat = aug_data.values
+        feat = aug_data.values.astype(np.float64)
         feat = feat.reshape(N, T, -1)
         feat = torch.from_numpy(feat)
 
